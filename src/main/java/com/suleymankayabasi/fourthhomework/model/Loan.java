@@ -25,14 +25,17 @@ public class Loan implements Serializable {
     @Column(name = "LOAN_ID",nullable = false)
     private Long loanId;
 
-    @Column(name= "PRINCIPAL_DEBT_AMOUNT",precision=10, scale=2,updatable = false)
+    //Ana Borç Tutarı kaydedildikten sonra güncellenemez.
+    @Column(name= "PRINCIPAL_DEBT",precision=10, scale=2,updatable = false)
     private BigDecimal principalDebt;
 
-    @Column(name = "TOTAL_DEBT", precision = 10, scale = 2)
-    private BigDecimal totalDebt;
+    //Kalan borç
+    @Column(name = "ARREARS", precision = 10, scale = 2)
+    private BigDecimal arrears;
 
+    //Borca ait bir “vade tarihi” alanı olmalıdır.
     @Column(name = "DUE_DATE")
-    @Temporal(TemporalType.TIMESTAMP)
+    @Temporal(TemporalType.DATE)
     private Date dueDate;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -41,5 +44,6 @@ public class Loan implements Serializable {
 
     @Transient
     private BigDecimal lateFeeAmount;
+    //Borç sorgulama servisi sonucunda gecikme zammı hesaplanmalı fakat databasede “gecikme zammı” alanı tutulmamalıdır
 
 }
