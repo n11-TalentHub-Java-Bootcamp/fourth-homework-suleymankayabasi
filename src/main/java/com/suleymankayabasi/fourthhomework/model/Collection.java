@@ -21,7 +21,7 @@ public class Collection implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long collectionId;
+    private Long collectionid;
 
     @Column(name = "REGISTRATION_DATE")
     @Temporal(TemporalType.DATE)
@@ -42,7 +42,7 @@ public class Collection implements Serializable {
     //Bağlı olduğu borç bilgisi muhakkak tutulmalıdır ki hangi borca istinaden bu gecikme zammı oluşmuş, görünebilsin.
 
     @Column(name = "USER_ID")
-    private Long loanUserId;
+    private String loanUserId;
 }
 
 
