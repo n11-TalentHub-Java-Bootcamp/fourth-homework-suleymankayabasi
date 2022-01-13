@@ -135,7 +135,20 @@ public class LoanService implements ILoanService{
 
     @Override
     public BigDecimal returnSnapLateFeeAmount(Long id) {
-        return null;
+
+        List<Loan> loanList = loanRepository.findAll();
+        BigDecimal sum = BigDecimal.valueOf(0);
+        for (Loan loan: loanList){
+            if(loan.getUser().getUserId().equals(id)){
+                if(isUnvalidDueDate(loan.getDueDate()) && loan.getArrears().compareTo(BigDecimal.valueOf(0)) > 0){
+                    sum = sum.add(calculateLateFeeAmount(loan.getDueDate()));
+                }
+            }
+            else{
+                throw new UserNotFoundException("User is not found.");
+            }
+        }
+        return sum;
     }
 
     // vade tarihi 2018den önce mi
@@ -162,6 +175,12 @@ public class LoanService implements ILoanService{
         return (int) ChronoUnit.DAYS.between(dateTwoThousandEighteen,localDate);
     }
 
+    // due date başlangıç alıp günümüze kadar olan günleri hesaplıyor
+    private int calculateDayAmountAfterTwoThousandEighteenDueDate(LocalDate dueDate){
+        LocalDate date = LocalDate.now();
+        return (int) ChronoUnit.DAYS.between(dueDate,date);
+    }
+
     // geçikme zammı borcu döner
     private BigDecimal calculateLateFeeAmount(LocalDate dueDate) {
 
@@ -176,7 +195,7 @@ public class LoanService implements ILoanService{
             return result;
 
         } else{
-            int  afterday = calculateDayAmountAfterTwoThousandEighteen(localDateNow);
+            int  afterday = calculateDayAmountAfterTwoThousandEighteenDueDate(dueDate);
             double after = after2018 * afterday;
             BigDecimal result = BigDecimal.valueOf( after);
             return result;
@@ -198,7 +217,6 @@ public class LoanService implements ILoanService{
             //ana tutar + gecikme faizi --> toplam borç
             return mainDebt.add(calculateLateFeeAmount(loan.getDueDate()));
         }
-
         return mainDebt;
     }
 }

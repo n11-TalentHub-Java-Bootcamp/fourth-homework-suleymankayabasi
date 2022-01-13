@@ -53,4 +53,9 @@ public class LoanController {
     public ResponseEntity<BigDecimal> returnDueDateDebtAmount(@PathVariable Long id) {
         return ResponseEntity.status(HttpStatus.OK).body(loanService.returnDueDateDebtAmount(id));
     }
+
+    @GetMapping("/late-fee-total/{id}")
+    public ResponseEntity<BigDecimal> returnSnapLateFeeAmount(@PathVariable Long id){
+        return ResponseEntity.status(HttpStatus.OK).body(loanService.returnSnapLateFeeAmount(id));
+    }
 }
