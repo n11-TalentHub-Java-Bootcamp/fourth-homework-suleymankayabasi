@@ -17,7 +17,7 @@ public class UserController {
     @Autowired
     private IUserService userService;
 
-    @PostMapping("")
+    @PostMapping
     public ResponseEntity<UserDTO> saveUser(@RequestBody @Valid UserDTO userDTO) {
         return ResponseEntity.status(HttpStatus.CREATED).body(userService.save(userDTO));
     }

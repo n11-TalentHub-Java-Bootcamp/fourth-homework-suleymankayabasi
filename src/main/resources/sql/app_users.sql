@@ -1,0 +1,10 @@
+insert into app_users (user_id, name, last_name, id_number) values (1, 'Nicol', 'Tieman', '3021407595');
+insert into app_users (user_id, name, last_name, id_number) values (2, 'Dill', 'Antoney', '1122042434');
+insert into app_users (user_id, name, last_name, id_number) values (3, 'Britta', 'Walisiak', '9057824930');
+insert into app_users (user_id, name, last_name, id_number) values (4, 'Benedikta', 'Kenyam', '9655111059');
+insert into app_users (user_id, name, last_name, id_number) values (5, 'Edlin', 'Anan', '2285864787');
+insert into app_users (user_id, name, last_name, id_number) values (6, 'York', 'Avramovic', '6177955460');
+insert into app_users (user_id, name, last_name, id_number) values (7, 'Chas', 'Fife', '3856239820');
+insert into app_users (user_id, name, last_name, id_number) values (8, 'Dorelia', 'Andrys', '1747772275');
+insert into app_users (user_id, name, last_name, id_number) values (9, 'Aloin', 'Appleby', '9517712065');
+insert into app_users (user_id, name, last_name, id_number) values (10, 'Itch', 'Widdocks', '4078897568');

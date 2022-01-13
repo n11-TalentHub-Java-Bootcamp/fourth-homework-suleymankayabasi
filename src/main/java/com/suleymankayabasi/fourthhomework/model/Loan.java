@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.util.Date;
+import java.time.LocalDate;
 
 @Entity
 @Table(name="LOANS")
@@ -33,10 +33,12 @@ public class Loan implements Serializable {
     @Column(name = "ARREARS", precision = 10, scale = 2)
     private BigDecimal arrears;
 
-    //Borca ait bir “vade tarihi” alanı olmalıdır.
-    @Column(name = "DUE_DATE")
-    @Temporal(TemporalType.DATE)
-    private Date dueDate;
+    @Column(name = "LOAN_DATE",columnDefinition = "DATE")
+    private LocalDate loanDate;
+    // borc kayıt tarihi
+
+    @Column(name = "DUE_DATE",columnDefinition = "DATE")
+    private LocalDate dueDate;
 
     @Column(name = "LOAN_TYPE")
     private String loanType;
@@ -44,9 +46,5 @@ public class Loan implements Serializable {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "LOAN_USER",foreignKey = @ForeignKey(name = "FK_LOAN_USER_ID"))
     private User user;
-
-    @Transient
-    private BigDecimal lateFeeAmount;
-    //Borç sorgulama servisi sonucunda gecikme zammı hesaplanmalı fakat databasede “gecikme zammı” alanı tutulmamalıdır
 
 }
