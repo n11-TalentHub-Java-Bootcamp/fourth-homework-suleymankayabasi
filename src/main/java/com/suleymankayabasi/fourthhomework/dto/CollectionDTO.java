@@ -18,7 +18,7 @@ public class CollectionDTO {
     private Date registrationDate;
     private BigDecimal principalDebtAmount;
     private BigDecimal loanAmount;
-    private String loanType;
+    private String colectionLoanType;
     private Long loanId;
     private Long loanUserId;
 

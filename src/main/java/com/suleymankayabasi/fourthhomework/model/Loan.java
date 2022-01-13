@@ -38,6 +38,9 @@ public class Loan implements Serializable {
     @Temporal(TemporalType.DATE)
     private Date dueDate;
 
+    @Column(name = "LOAN_TYPE")
+    private String loanType;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "LOAN_USER",foreignKey = @ForeignKey(name = "FK_LOAN_USER_ID"))
     private User user;

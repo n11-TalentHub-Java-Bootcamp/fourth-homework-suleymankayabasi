@@ -28,14 +28,14 @@ public class Collection implements Serializable {
     private Date registrationDate;  //Kayıt tarihi tahsilat yapılan tarih olur.
 
     // ana borç varsa geçikme borcunu dagöstermeli
-    @Column(name= "PRINCIPAL_DEBT_AMOUNT",precision=10, scale=2)
+    @Column(name= "PRINCIPAL_DEBT_AMOUNT",precision=10, scale=2,updatable = false)
     private BigDecimal principalDebtAmount;
 
     @Column(name= "LOAN_AMOUNT",precision=10, scale=2)
     private BigDecimal loanAmount;
 
-    @Column(name = "LOAN_TYPE")
-    private String loanType;
+    @Column(name = "COLLECTION_LOAN_TYPE")
+    private String colectionLoanType;
 
     @Column(name = "LOAN_ID")
     private Long loanId;
