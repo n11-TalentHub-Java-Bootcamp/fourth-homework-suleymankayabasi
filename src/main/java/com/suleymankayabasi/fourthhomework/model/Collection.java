@@ -34,18 +34,15 @@ public class Collection implements Serializable {
     private BigDecimal loanAmount;
 
     @Column(name = "COLLECTION_LOAN_TYPE")
-    private String colectionLoanType;
+    private String collectionLoanType;
 
     @Column(name = "LOAN_ID")
     private Long loanId;
     //Bağlı olduğu borç bilgisi muhakkak tutulmalıdır ki hangi borca istinaden bu gecikme zammı oluşmuş, görünebilsin.
 
     @Column(name = "USER_ID")
-    private String loanUserId;
+    private Long loanUserId;
 
-    @Column(name = "LATE_FEE_AMOUNT",precision=10, scale=2)
-    private BigDecimal lateFeeAmount ;
-    //Borç sorgulama servisi sonucunda gecikme zammı hesaplanmalı fakat databasede “gecikme zammı” alanı tutulmamalıdır
 }
 
 

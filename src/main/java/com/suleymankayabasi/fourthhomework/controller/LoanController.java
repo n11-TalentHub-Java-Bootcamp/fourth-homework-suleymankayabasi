@@ -21,7 +21,12 @@ public class LoanController {
     @Autowired
     private ILoanService loanService;
 
-    @GetMapping
+    @GetMapping("/loan-amount/{id}")
+    public ResponseEntity<BigDecimal> calculateLoan(@PathVariable Long id){
+        return ResponseEntity.status(HttpStatus.OK).body(loanService.calculateLoan(id));
+    }
+
+    @GetMapping("/{id}")
     public ResponseEntity<LoanDTO> findLoanByLoanId(@PathVariable Long id){
         return ResponseEntity.status(HttpStatus.OK).body(loanService.findLoanById(id));
     }

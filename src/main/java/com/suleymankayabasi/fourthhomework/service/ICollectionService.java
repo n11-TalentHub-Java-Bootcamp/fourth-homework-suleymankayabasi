@@ -8,8 +8,9 @@ import java.util.List;
 
 public interface ICollectionService {
 
-    CollectionDTO collect(Long id, BigDecimal collectionAmount); //???
+    CollectionDTO collect(Long id, BigDecimal collectionAmount);
     List<CollectionDTO> listCollection(LocalDate firstDate, LocalDate lastDate);
     List<CollectionDTO> listAllCollectionByUserId(Long id);
     List<CollectionDTO> listTotalLateFeeAmountByUserId(Long id);
+    BigDecimal calculateTotalLateFee(Long id);
 }

@@ -228,4 +228,11 @@ public class LoanService implements ILoanService{
         return loanDTO;
 
     }
+
+    @Override
+    public BigDecimal calculateLoan(Long id) {
+        Loan loan = loanRepository.findLoanByLoanId(id);
+        return calculateLoan(loan);
+    }
+
 }
