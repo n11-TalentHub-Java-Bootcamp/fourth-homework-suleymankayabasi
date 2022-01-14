@@ -15,4 +15,5 @@ public interface ILoanService {
     BigDecimal returnTotalDebtAmount(Long id);
     BigDecimal returnDueDateDebtAmount(Long id);
     BigDecimal returnSnapLateFeeAmount(Long id);
+    LoanDTO findLoanById(Long id);
 }

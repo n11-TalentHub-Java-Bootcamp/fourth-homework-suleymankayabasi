@@ -16,6 +16,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
+
 @Service
 @Transactional
 public class LoanService implements ILoanService{
@@ -182,7 +183,7 @@ public class LoanService implements ILoanService{
     }
 
     // geçikme zammı borcu döner
-    private BigDecimal calculateLateFeeAmount(LocalDate dueDate) {
+    protected BigDecimal calculateLateFeeAmount(LocalDate dueDate) {
 
         LocalDate localDateNow = LocalDate.now();
 
@@ -204,7 +205,7 @@ public class LoanService implements ILoanService{
     }
 
     // vadesi geçmiş mi bunu kontrol ediyor
-    private boolean isUnvalidDueDate(LocalDate dueDate){
+    protected boolean isUnvalidDueDate(LocalDate dueDate){
         LocalDate nowDate = LocalDate.now();
         return  dueDate.isBefore(nowDate);
     }
@@ -218,5 +219,13 @@ public class LoanService implements ILoanService{
             return mainDebt.add(calculateLateFeeAmount(loan.getDueDate()));
         }
         return mainDebt;
+    }
+
+    public LoanDTO findLoanById(Long id){
+        Loan loan = loanRepository.findLoanByLoanId(id);
+        if(loan.equals(null)) throw new LoanNotFoundException("Loan not found");
+        LoanDTO loanDTO = LoanMapper.INSTANCE.convertLoanToLoanDTO(loan);
+        return loanDTO;
+
     }
 }

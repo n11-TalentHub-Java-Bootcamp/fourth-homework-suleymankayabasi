@@ -1,6 +1,7 @@
 package com.suleymankayabasi.fourthhomework.controller;
 
 import com.suleymankayabasi.fourthhomework.dto.LoanDTO;
+import com.suleymankayabasi.fourthhomework.model.Loan;
 import com.suleymankayabasi.fourthhomework.service.ILoanService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -20,6 +21,11 @@ public class LoanController {
     @Autowired
     private ILoanService loanService;
 
+    @GetMapping
+    public ResponseEntity<LoanDTO> findLoanByLoanId(@PathVariable Long id){
+        return ResponseEntity.status(HttpStatus.OK).body(loanService.findLoanById(id));
+    }
+
     @PostMapping
     public ResponseEntity<LoanDTO> saveLoan(@RequestBody @Valid LoanDTO loanDTO){
         return ResponseEntity.status(HttpStatus.CREATED).body(loanService.save(loanDTO));
@@ -34,12 +40,12 @@ public class LoanController {
         return loanService.listLoans(dateBefore,dateAfter);
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/list-loans-user/{id}")
     public List<LoanDTO> listAllLoansByUserId(@PathVariable Long id){
         return loanService.listAllLoansByUserId(id);
     }
 
-    @GetMapping("/due-date-loans-list/{id}")
+    @GetMapping("/due-date-loans-list-user/{id}")
     public List<LoanDTO> listAllDueDateLoansByUserId(@PathVariable Long id){
         return loanService.listAllDueDateLoansByUserId(id);
     }
