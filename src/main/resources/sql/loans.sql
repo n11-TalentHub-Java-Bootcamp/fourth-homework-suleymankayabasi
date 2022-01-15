@@ -1,0 +1,9 @@
+insert into loans (loan_id, arrears, due_date, loan_date, loan_type, principal_debt, loan_user) values (10, 100, '2021-12-07', '2020-07-16', 'Normal', 100, 1);
+insert into loans (loan_id, arrears, due_date, loan_date, loan_type, principal_debt, loan_user) values (20, 200, '2020-07-04', '2016-10-01', 'Normal', 200, 2);
+insert into loans (loan_id, arrears, due_date, loan_date, loan_type, principal_debt, loan_user) values (30, 300, '2020-03-13', '2018-04-14', 'Normal', 300, 2);
+insert into loans (loan_id, arrears, due_date, loan_date, loan_type, principal_debt, loan_user) values (40, 400, '2022-12-16', '2021-10-23', 'Normal', 400, 4);
+insert into loans (loan_id, arrears, due_date, loan_date, loan_type, principal_debt, loan_user) values (50, 500, '2023-12-19', '2021-12-07', 'Normal', 500, 3);
+insert into loans (loan_id, arrears, due_date, loan_date, loan_type, principal_debt, loan_user) values (60, 600, '2019-03-30', '2018-07-12', 'Normal', 600, 6);
+insert into loans (loan_id, arrears, due_date, loan_date, loan_type, principal_debt, loan_user) values (70, 800, '2019-12-03', '2019-06-05', 'Normal', 800, 4);
+insert into loans (loan_id, arrears, due_date, loan_date, loan_type, principal_debt, loan_user) values (90, 900, '2019-07-03', '2019-04-17', 'Normal', 900, 9);
+insert into loans (loan_id, arrears, due_date, loan_date, loan_type, principal_debt, loan_user) values (9, 1000, '2020-12-31', '2018-09-27', 'Normal', 1000, 10);

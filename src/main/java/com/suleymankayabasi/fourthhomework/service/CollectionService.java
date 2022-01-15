@@ -33,11 +33,6 @@ public class CollectionService implements ICollectionService{
     @Autowired
     private LoanService loanService;
 
-    //Bir borç tahsilatı yapıldığında, eğer vade tarihi geçmiş ise, gecikme zammı tutarı kadar bir borç kaydı atılır.
-    //Kayıt tarihi tahsilat yapılan tarih olur.
-    //Bağlı olduğu borç bilgisi muhakkak tutulmalıdır ki hangi borca istinaden bu gecikme zammı oluşmuş, görünebilsin.
-    //Asıl borç ve buna bağlı olan, tahsilat anında oluşturulan gecikme zammı borcunun borç tutarları 0(sıfır) yapılır. Ana borç tutarına dokunulmaz.
-    //Parçalı tahsilat yapılamaz. Bir borç tahsil edilmek istenirse borcun tamamı ödenmelidir.
     @Override
     public CollectionDTO collect(Long id,BigDecimal collectionAmount) {
 
@@ -63,16 +58,13 @@ public class CollectionService implements ICollectionService{
         CollectionDTO collectionDTO = CollectionMapper.INSTANCE.convertCollectionToCollectionDTO(collection0);
 
         if(loanService.isUnvalidDueDate(loan.getDueDate())){
-            // loan.setArrears(loanService.calculateLoan(loan)); // borç tablosundaki arrears güncellendi
-            collectionDTO.setLoanAmount(loanService.calculateLateFeeAmount(loanDTO.getDueDate())); // vadesi geçmiş borçlar için geçikme faizi hesaplandı
 
-            //tahsilat kısmı
-            //loan amount kısmı 0lanmalı tahsilat sonucunda
+            collectionDTO.setLoanAmount(loanService.calculateLateFeeAmount(loanDTO.getDueDate()));
+
             while(!(collectionDTO.getLoanAmount().equals(BigDecimal.valueOf(0)))){
 
                 collectionDTO.setPrincipalDebtAmount(loan.getPrincipalDebt());
 
-                //normal borç kısmı
                 if(!(collectionDTO.getPrincipalDebtAmount().equals(BigDecimal.valueOf(0)))){
 
                     collectionDTO.setCollectionLoanType(loanNormal);
@@ -84,7 +76,6 @@ public class CollectionService implements ICollectionService{
                 }
                 collectionDTO.setPrincipalDebtAmount(collectionDTO.getLoanAmount());
 
-                //geçikme zammı kısmı
                 if(!(collectionDTO.getPrincipalDebtAmount().equals(BigDecimal.valueOf(0)))){
 
                     collectionDTO.setLoanAmount(BigDecimal.valueOf(0));
@@ -96,7 +87,9 @@ public class CollectionService implements ICollectionService{
                     collectionRepository.save(collection1);
                 }
             }
+
         }
+        loanService.updateLoanAmount(id);
         return collectionDTO;
     }
 
@@ -164,6 +157,4 @@ public class CollectionService implements ICollectionService{
         }
         return total;
     }
-
-
 }

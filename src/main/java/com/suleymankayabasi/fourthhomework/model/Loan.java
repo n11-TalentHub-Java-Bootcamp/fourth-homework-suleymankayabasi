@@ -25,17 +25,14 @@ public class Loan implements Serializable {
     @Column(name = "LOAN_ID",nullable = false)
     private Long loanId;
 
-    //Ana Borç Tutarı kaydedildikten sonra güncellenemez.
     @Column(name= "PRINCIPAL_DEBT",precision=10, scale=2,updatable = false)
     private BigDecimal principalDebt;
 
-    //Kalan borç
     @Column(name = "ARREARS", precision = 10, scale = 2)
     private BigDecimal arrears;
 
     @Column(name = "LOAN_DATE",columnDefinition = "DATE")
     private LocalDate loanDate;
-    // borc kayıt tarihi
 
     @Column(name = "DUE_DATE",columnDefinition = "DATE")
     private LocalDate dueDate;

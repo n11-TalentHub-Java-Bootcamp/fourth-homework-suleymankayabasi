@@ -22,7 +22,6 @@ import java.util.List;
 public class LoanService implements ILoanService{
 
     private static final String loanNormal = "Normal";
-    private static final String loanLateFee = "Late Fee";
 
     private static final double before2018 = 1.5;
     private static final double after2018 = 2.0;
@@ -75,7 +74,6 @@ public class LoanService implements ILoanService{
         List<LoanDTO> loanDTOList = LoanMapper.INSTANCE.convertLoanListToLoanDTOList(newLoanList);
         if(loanDTOList.isEmpty()) throw new LoanNotFoundException("Loan List is empty");
         return loanDTOList;
-
     }
 
     @Override
@@ -152,7 +150,29 @@ public class LoanService implements ILoanService{
         return sum;
     }
 
-    // vade tarihi 2018den önce mi
+    @Override
+    public BigDecimal calculateLoan(Long id) {
+        Loan loan = loanRepository.findLoanByLoanId(id);
+        return calculateLoan(loan);
+    }
+
+    public BigDecimal calculateLoan(Loan loan){
+
+        BigDecimal mainDebt = loan.getPrincipalDebt();
+        if(isUnvalidDueDate(loan.getDueDate())){
+            return mainDebt.add(calculateLateFeeAmount(loan.getDueDate()));
+        }
+        return mainDebt;
+    }
+
+    public LoanDTO findLoanById(Long id){
+        Loan loan = loanRepository.findLoanByLoanId(id);
+        if(loan.equals(null)) throw new LoanNotFoundException("Loan not found");
+        LoanDTO loanDTO = LoanMapper.INSTANCE.convertLoanToLoanDTO(loan);
+        return loanDTO;
+
+    }
+
     private boolean isDateBeforeTwoThousandEighteen(LocalDate localDate){
 
         String twoThousandEighteenStr = "2018-01-01";
@@ -160,7 +180,6 @@ public class LoanService implements ILoanService{
         return localDate.isBefore(twoThousandEighteen);
     }
 
-    // 2018den önceki vade tarihi ile 2018 arasındaki gün sayısı
     private int calculateDayAmountBeforeTwoThousandEighteen(LocalDate localDate){
 
         String dateTwoThousandEighteenStr = "2018-01-01";
@@ -168,7 +187,6 @@ public class LoanService implements ILoanService{
         return (int) ChronoUnit.DAYS.between(localDate, dateTwoThousandEighteen);
     }
 
-    // 2018den sonraki vade tarihi ile 2018 arasındaki gün sayısı
     private int calculateDayAmountAfterTwoThousandEighteen(LocalDate localDate){
 
         String dateTwoThousandEighteenStr = "2018-01-01";
@@ -176,13 +194,11 @@ public class LoanService implements ILoanService{
         return (int) ChronoUnit.DAYS.between(dateTwoThousandEighteen,localDate);
     }
 
-    // due date başlangıç alıp günümüze kadar olan günleri hesaplıyor
     private int calculateDayAmountAfterTwoThousandEighteenDueDate(LocalDate dueDate){
         LocalDate date = LocalDate.now();
         return (int) ChronoUnit.DAYS.between(dueDate,date);
     }
 
-    // geçikme zammı borcu döner
     protected BigDecimal calculateLateFeeAmount(LocalDate dueDate) {
 
         LocalDate localDateNow = LocalDate.now();
@@ -204,35 +220,15 @@ public class LoanService implements ILoanService{
         }
     }
 
-    // vadesi geçmiş mi bunu kontrol ediyor
     protected boolean isUnvalidDueDate(LocalDate dueDate){
         LocalDate nowDate = LocalDate.now();
         return  dueDate.isBefore(nowDate);
     }
 
-    public BigDecimal calculateLoan(Loan loan){
-
-        BigDecimal mainDebt = loan.getPrincipalDebt();
-        //vade tarihine bakıyor borcun
-        if(isUnvalidDueDate(loan.getDueDate())){
-            //ana tutar + gecikme faizi --> toplam borç
-            return mainDebt.add(calculateLateFeeAmount(loan.getDueDate()));
-        }
-        return mainDebt;
-    }
-
-    public LoanDTO findLoanById(Long id){
+    protected LoanDTO updateLoanAmount(Long id){
         Loan loan = loanRepository.findLoanByLoanId(id);
-        if(loan.equals(null)) throw new LoanNotFoundException("Loan not found");
+        loan.setArrears(BigDecimal.valueOf(0));
         LoanDTO loanDTO = LoanMapper.INSTANCE.convertLoanToLoanDTO(loan);
-        return loanDTO;
-
+        return  loanDTO;
     }
-
-    @Override
-    public BigDecimal calculateLoan(Long id) {
-        Loan loan = loanRepository.findLoanByLoanId(id);
-        return calculateLoan(loan);
-    }
-
 }

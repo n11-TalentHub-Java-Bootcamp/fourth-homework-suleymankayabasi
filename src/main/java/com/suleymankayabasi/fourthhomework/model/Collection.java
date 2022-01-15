@@ -24,9 +24,8 @@ public class Collection implements Serializable {
     private Long collectionid;
 
     @Column(name = "REGISTRATION_DATE",columnDefinition = "DATE")
-    private LocalDate registrationDate;  //Kayıt tarihi tahsilat yapılan tarih olur.
+    private LocalDate registrationDate;
 
-    // ana borç varsa geçikme borcunu dagöstermeli
     @Column(name= "PRINCIPAL_DEBT_AMOUNT",precision=10, scale=2,updatable = false)
     private BigDecimal principalDebtAmount;
 
@@ -38,11 +37,9 @@ public class Collection implements Serializable {
 
     @Column(name = "LOAN_ID")
     private Long loanId;
-    //Bağlı olduğu borç bilgisi muhakkak tutulmalıdır ki hangi borca istinaden bu gecikme zammı oluşmuş, görünebilsin.
 
     @Column(name = "USER_ID")
     private Long loanUserId;
-
 }
 
 
