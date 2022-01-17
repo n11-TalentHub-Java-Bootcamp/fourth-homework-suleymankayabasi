@@ -1,18 +1,19 @@
 package com.suleymankayabasi.fourthhomework.service;
 
 import com.suleymankayabasi.fourthhomework.dto.LoanDTO;
+import com.suleymankayabasi.fourthhomework.enums.LoanTypeEnum;
 import com.suleymankayabasi.fourthhomework.exception.LoanNotFoundException;
 import com.suleymankayabasi.fourthhomework.exception.UserNotFoundException;
 import com.suleymankayabasi.fourthhomework.mapper.LoanMapper;
 import com.suleymankayabasi.fourthhomework.model.Loan;
 import com.suleymankayabasi.fourthhomework.repository.LoanRepository;
+import com.suleymankayabasi.fourthhomework.util.LoanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,11 +22,6 @@ import java.util.List;
 @Transactional
 public class LoanService implements ILoanService{
 
-    private static final String loanNormal = "Normal";
-
-    private static final double before2018 = 1.5;
-    private static final double after2018 = 2.0;
-
     @Autowired
     private LoanRepository loanRepository;
 
@@ -33,7 +29,7 @@ public class LoanService implements ILoanService{
     public LoanDTO save(LoanDTO loanDTO) {
 
         Loan loan = LoanMapper.INSTANCE.convertLoanDTOtoLoan(loanDTO);
-        if(loan.getLoanType().equalsIgnoreCase(loanNormal)){
+        if(loan.getLoanType().equalsIgnoreCase(LoanTypeEnum.STR_NORMAL.toString())){
             loan = loanRepository.save(loan);
             LoanDTO loanDTOResult = LoanMapper.INSTANCE.convertLoanToLoanDTO(loan);
             return loanDTOResult;
@@ -83,7 +79,7 @@ public class LoanService implements ILoanService{
         List<Loan> newLoanList = new ArrayList<>();
         for (Loan loan : loanList) {
             if (loan.getUser().getUserId().equals(id)) {
-                if (isUnvalidDueDate(loan.getDueDate())) {
+                if (LoanUtils.isInvalidDueDate(loan.getDueDate())) {
                     if(loan.getArrears().compareTo(BigDecimal.valueOf(0)) > 0){
                         newLoanList.add(loan);
                     }
@@ -121,7 +117,7 @@ public class LoanService implements ILoanService{
         BigDecimal sum = BigDecimal.valueOf(0);
         for (Loan loan: loanList){
             if(loan.getUser().getUserId().equals(id)){
-                if(isUnvalidDueDate(loan.getDueDate())){
+                if(LoanUtils.isInvalidDueDate(loan.getDueDate())){
                     sum = sum.add(loan.getArrears());
                 }
             }
@@ -139,8 +135,8 @@ public class LoanService implements ILoanService{
         BigDecimal sum = BigDecimal.valueOf(0);
         for (Loan loan: loanList){
             if(loan.getUser().getUserId().equals(id)){
-                if(isUnvalidDueDate(loan.getDueDate()) && loan.getArrears().compareTo(BigDecimal.valueOf(0)) > 0){
-                    sum = sum.add(calculateLateFeeAmount(loan.getDueDate()));
+                if(LoanUtils.isInvalidDueDate(loan.getDueDate()) && loan.getArrears().compareTo(BigDecimal.valueOf(0)) > 0){
+                    sum = sum.add(LoanUtils.calculateLateFeeAmount(loan.getDueDate()));
                 }
             }
             else{
@@ -150,19 +146,9 @@ public class LoanService implements ILoanService{
         return sum;
     }
 
-    @Override
-    public BigDecimal calculateLoan(Long id) {
+    public BigDecimal calculateLoanById(Long id) {
         Loan loan = loanRepository.findLoanByLoanId(id);
-        return calculateLoan(loan);
-    }
-
-    public BigDecimal calculateLoan(Loan loan){
-
-        BigDecimal mainDebt = loan.getPrincipalDebt();
-        if(isUnvalidDueDate(loan.getDueDate())){
-            return mainDebt.add(calculateLateFeeAmount(loan.getDueDate()));
-        }
-        return mainDebt;
+        return LoanUtils.calculateLoan(loan);
     }
 
     public LoanDTO findLoanById(Long id){
@@ -171,58 +157,6 @@ public class LoanService implements ILoanService{
         LoanDTO loanDTO = LoanMapper.INSTANCE.convertLoanToLoanDTO(loan);
         return loanDTO;
 
-    }
-
-    private boolean isDateBeforeTwoThousandEighteen(LocalDate localDate){
-
-        String twoThousandEighteenStr = "2018-01-01";
-        LocalDate twoThousandEighteen = LocalDate.parse(twoThousandEighteenStr);
-        return localDate.isBefore(twoThousandEighteen);
-    }
-
-    private int calculateDayAmountBeforeTwoThousandEighteen(LocalDate localDate){
-
-        String dateTwoThousandEighteenStr = "2018-01-01";
-        LocalDate dateTwoThousandEighteen = LocalDate.parse(dateTwoThousandEighteenStr);
-        return (int) ChronoUnit.DAYS.between(localDate, dateTwoThousandEighteen);
-    }
-
-    private int calculateDayAmountAfterTwoThousandEighteen(LocalDate localDate){
-
-        String dateTwoThousandEighteenStr = "2018-01-01";
-        LocalDate dateTwoThousandEighteen = LocalDate.parse(dateTwoThousandEighteenStr);
-        return (int) ChronoUnit.DAYS.between(dateTwoThousandEighteen,localDate);
-    }
-
-    private int calculateDayAmountAfterTwoThousandEighteenDueDate(LocalDate dueDate){
-        LocalDate date = LocalDate.now();
-        return (int) ChronoUnit.DAYS.between(dueDate,date);
-    }
-
-    protected BigDecimal calculateLateFeeAmount(LocalDate dueDate) {
-
-        LocalDate localDateNow = LocalDate.now();
-
-        if (isDateBeforeTwoThousandEighteen(dueDate)) {
-            int beforeday = calculateDayAmountBeforeTwoThousandEighteen(dueDate);
-            double before = before2018 * beforeday;
-            int  afterday = calculateDayAmountAfterTwoThousandEighteen(localDateNow);
-            double after = after2018 * afterday;
-            BigDecimal result = BigDecimal.valueOf(before + after);
-            return result;
-
-        } else{
-            int  afterday = calculateDayAmountAfterTwoThousandEighteenDueDate(dueDate);
-            double after = after2018 * afterday;
-            BigDecimal result = BigDecimal.valueOf( after);
-            return result;
-
-        }
-    }
-
-    protected boolean isUnvalidDueDate(LocalDate dueDate){
-        LocalDate nowDate = LocalDate.now();
-        return  dueDate.isBefore(nowDate);
     }
 
     protected LoanDTO updateLoanAmount(Long id){

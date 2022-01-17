@@ -2,6 +2,7 @@ package com.suleymankayabasi.fourthhomework.service;
 
 import com.suleymankayabasi.fourthhomework.dto.CollectionDTO;
 import com.suleymankayabasi.fourthhomework.dto.LoanDTO;
+import com.suleymankayabasi.fourthhomework.enums.LoanTypeEnum;
 import com.suleymankayabasi.fourthhomework.exception.CollectionNotFoundException;
 import com.suleymankayabasi.fourthhomework.exception.LoanNotFoundException;
 import com.suleymankayabasi.fourthhomework.exception.UserNotFoundException;
@@ -10,6 +11,7 @@ import com.suleymankayabasi.fourthhomework.mapper.LoanMapper;
 import com.suleymankayabasi.fourthhomework.model.Collection;
 import com.suleymankayabasi.fourthhomework.model.Loan;
 import com.suleymankayabasi.fourthhomework.repository.CollectionRepository;
+import com.suleymankayabasi.fourthhomework.util.LoanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -22,10 +24,6 @@ import java.util.List;
 @Service
 @Transactional
 public class CollectionService implements ICollectionService{
-
-    private static final String loanTotal = "Total";
-    private static final String loanNormal = "Normal";
-    private static final String loanLateFee = "Late Fee";
 
     @Autowired
     private CollectionRepository collectionRepository;
@@ -41,15 +39,15 @@ public class CollectionService implements ICollectionService{
         if(loanDTO.equals(null)) throw new LoanNotFoundException("Loan not found.");
         Loan loan = LoanMapper.INSTANCE.convertLoanDTOtoLoan(loanDTO);
 
-        if(loanService.calculateLoan(loan).compareTo(collectionAmount)>0){
+        if(LoanUtils.calculateLoan(loan).compareTo(collectionAmount)>0){
             throw new CollectionNotFoundException("Collection amount is not enough!");
         }
 
         Collection collection = new Collection();
         collection.setPrincipalDebtAmount(loanDTO.getPrincipalDebt());
-        collection.setLoanAmount(loanService.calculateLoan(id));
+        collection.setLoanAmount(loanService.calculateLoanById(id));
         collection.setRegistrationDate(LocalDate.now());
-        collection.setCollectionLoanType(loanTotal);
+        collection.setCollectionLoanType(LoanTypeEnum.STR_TOTAL.toString());
         collection.setLoanId(id);
         collection.setLoanUserId(loanDTO.getUserId());
         collectionRepository.save(collection);
@@ -57,9 +55,9 @@ public class CollectionService implements ICollectionService{
         Collection collection0 = collectionRepository.findCollectionByLoanId(id);
         CollectionDTO collectionDTO = CollectionMapper.INSTANCE.convertCollectionToCollectionDTO(collection0);
 
-        if(loanService.isUnvalidDueDate(loan.getDueDate())){
+        if(LoanUtils.isInvalidDueDate(loan.getDueDate())){
 
-            collectionDTO.setLoanAmount(loanService.calculateLateFeeAmount(loanDTO.getDueDate()));
+            collectionDTO.setLoanAmount(LoanUtils.calculateLateFeeAmount(loanDTO.getDueDate()));
 
             while(!(collectionDTO.getLoanAmount().equals(BigDecimal.valueOf(0)))){
 
@@ -67,7 +65,7 @@ public class CollectionService implements ICollectionService{
 
                 if(!(collectionDTO.getPrincipalDebtAmount().equals(BigDecimal.valueOf(0)))){
 
-                    collectionDTO.setCollectionLoanType(loanNormal);
+                    collectionDTO.setCollectionLoanType(LoanTypeEnum.STR_NORMAL.toString());
                     collectionDTO.setLoanId(loan.getLoanId());
                     collectionDTO.setRegistrationDate(LocalDate.now());
                     collectionDTO.setLoanUserId(loan.getUser().getUserId());
@@ -79,7 +77,7 @@ public class CollectionService implements ICollectionService{
                 if(!(collectionDTO.getPrincipalDebtAmount().equals(BigDecimal.valueOf(0)))){
 
                     collectionDTO.setLoanAmount(BigDecimal.valueOf(0));
-                    collectionDTO.setCollectionLoanType(loanLateFee);
+                    collectionDTO.setCollectionLoanType(LoanTypeEnum.STR_LATE_FEE.toString());
                     collectionDTO.setLoanId(loan.getLoanId());
                     collectionDTO.setRegistrationDate(LocalDate.now());
                     collectionDTO.setLoanUserId(loan.getUser().getUserId());
@@ -134,7 +132,7 @@ public class CollectionService implements ICollectionService{
 
         for(Collection collection:collectionList){
             if(collection.getLoanUserId().equals(id)){
-                if(collection.getCollectionLoanType().equals(loanLateFee)){
+                if(collection.getCollectionLoanType().equals(LoanTypeEnum.STR_LATE_FEE.toString())){
                     newCollectionList.add(collection);
                 }
             }

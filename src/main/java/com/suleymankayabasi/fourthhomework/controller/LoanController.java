@@ -1,7 +1,6 @@
 package com.suleymankayabasi.fourthhomework.controller;
 
 import com.suleymankayabasi.fourthhomework.dto.LoanDTO;
-import com.suleymankayabasi.fourthhomework.model.Loan;
 import com.suleymankayabasi.fourthhomework.service.ILoanService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -23,7 +22,7 @@ public class LoanController {
 
     @GetMapping("/loan-amount/{id}")
     public ResponseEntity<BigDecimal> calculateLoan(@PathVariable Long id){
-        return ResponseEntity.status(HttpStatus.OK).body(loanService.calculateLoan(id));
+        return ResponseEntity.status(HttpStatus.OK).body(loanService.calculateLoanById(id));
     }
 
     @GetMapping("/{id}")
@@ -60,7 +59,7 @@ public class LoanController {
         return ResponseEntity.status(HttpStatus.OK).body(loanService.returnTotalDebtAmount(id));
     }
 
-    @GetMapping("/due-date-loans-total/{id}")
+    @GetMapping("/due-date-loans-total/{i4d}")
     public ResponseEntity<BigDecimal> returnDueDateDebtAmount(@PathVariable Long id) {
         return ResponseEntity.status(HttpStatus.OK).body(loanService.returnDueDateDebtAmount(id));
     }
