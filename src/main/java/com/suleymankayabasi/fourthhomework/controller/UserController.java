@@ -1,7 +1,7 @@
 package com.suleymankayabasi.fourthhomework.controller;
 
 import com.suleymankayabasi.fourthhomework.dto.UserDTO;
-import com.suleymankayabasi.fourthhomework.service.IUserService;
+import com.suleymankayabasi.fourthhomework.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,7 +15,7 @@ import java.util.List;
 public class UserController {
 
     @Autowired
-    private IUserService userService;
+    private UserService userService;
 
     @PostMapping
     public ResponseEntity<UserDTO> saveUser(@RequestBody @Valid UserDTO userDTO) {

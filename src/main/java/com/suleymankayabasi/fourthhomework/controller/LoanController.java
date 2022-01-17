@@ -1,7 +1,7 @@
 package com.suleymankayabasi.fourthhomework.controller;
 
 import com.suleymankayabasi.fourthhomework.dto.LoanDTO;
-import com.suleymankayabasi.fourthhomework.service.ILoanService;
+import com.suleymankayabasi.fourthhomework.service.LoanService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,7 +18,7 @@ import java.util.List;
 public class LoanController {
 
     @Autowired
-    private ILoanService loanService;
+    private LoanService loanService;
 
     @GetMapping("/loan-amount/{id}")
     public ResponseEntity<BigDecimal> calculateLoan(@PathVariable Long id){

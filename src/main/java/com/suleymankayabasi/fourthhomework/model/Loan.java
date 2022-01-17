@@ -44,4 +44,7 @@ public class Loan implements Serializable {
     @JoinColumn(name = "LOAN_USER",foreignKey = @ForeignKey(name = "FK_LOAN_USER_ID"))
     private User user;
 
+    @Transient
+    private BigDecimal LateFeeLoan;
+
 }

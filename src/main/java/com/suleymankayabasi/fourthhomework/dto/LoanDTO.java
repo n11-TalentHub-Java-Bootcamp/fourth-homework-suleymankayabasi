@@ -21,5 +21,6 @@ public class LoanDTO {
     private LocalDate dueDate;
     private String loanType;
     private Long userId;
+    private BigDecimal LateFeeLoan;
 
 }

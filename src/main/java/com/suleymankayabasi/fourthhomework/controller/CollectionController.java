@@ -1,7 +1,7 @@
 package com.suleymankayabasi.fourthhomework.controller;
 
 import com.suleymankayabasi.fourthhomework.dto.CollectionDTO;
-import com.suleymankayabasi.fourthhomework.service.ICollectionService;
+import com.suleymankayabasi.fourthhomework.service.CollectionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,7 +17,7 @@ import java.util.List;
 public class CollectionController {
 
     @Autowired
-    private ICollectionService collectionService;
+    private CollectionService collectionService;
 
     @PutMapping("/{id}/{collectionAmount}")
     public ResponseEntity<CollectionDTO> collect(@PathVariable  Long id, @PathVariable  BigDecimal collectionAmount){
