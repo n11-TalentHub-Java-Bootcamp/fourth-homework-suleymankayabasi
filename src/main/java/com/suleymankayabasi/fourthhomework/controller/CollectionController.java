@@ -19,8 +19,9 @@ public class CollectionController {
     @Autowired
     private CollectionService collectionService;
 
-    @PutMapping("/{id}/{collectionAmount}")
-    public ResponseEntity<CollectionDTO> collect(@PathVariable  Long id, @PathVariable  BigDecimal collectionAmount){
+    @PutMapping("/{id}")
+    public ResponseEntity<CollectionDTO> collect(@PathVariable  Long id,@RequestParam BigDecimal collectionAmount){
+
         return ResponseEntity.status(HttpStatus.CREATED).body(collectionService.collect(id,collectionAmount));
     }
 
@@ -33,12 +34,12 @@ public class CollectionController {
         return collectionService.listCollection(dateBefore, dateAfter);
     }
 
-    @GetMapping("/user-id/{id}")
+    @GetMapping("/user/{id}")
     public List<CollectionDTO> findAllCollectionByUserId(@PathVariable Long id){
         return collectionService.listAllCollectionByUserId(id);
     }
 
-    @GetMapping("/late-fee-amount/user-id/{id}")
+    @GetMapping("/late-fee-amount/user/{id}")
     public List<CollectionDTO> findAllLateFeeAmountByUserId(@PathVariable Long id){
         return collectionService.listTotalLateFeeAmountByUserId(id);
     }

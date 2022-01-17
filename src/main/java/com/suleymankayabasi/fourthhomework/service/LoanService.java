@@ -59,12 +59,9 @@ public class LoanService implements ILoanService{
         List<Loan> newLoanList = new ArrayList<>();
         for(Loan loan: loanList){
             if(loan.getUser().getUserId().equals(id)){
-                if(loan.getArrears().compareTo(BigDecimal.valueOf(0)) > 0){
+                if((loan.getArrears().compareTo(BigDecimal.ZERO)) > 0){
                     newLoanList.add(loan);
                 }
-            }
-            else {
-                throw new UserNotFoundException("User is not found.");
             }
         }
         List<LoanDTO> loanDTOList = LoanMapper.INSTANCE.convertLoanListToLoanDTOList(newLoanList);
@@ -85,11 +82,7 @@ public class LoanService implements ILoanService{
                     }
                 }
             }
-            else{
-                throw new UserNotFoundException("User is not found.");
-            }
         }
-
         List<LoanDTO> loanDTOList = LoanMapper.INSTANCE.convertLoanListToLoanDTOList(newLoanList);
         if (loanDTOList.isEmpty()) throw new LoanNotFoundException("Loan List is empty");
         return loanDTOList;
@@ -104,9 +97,6 @@ public class LoanService implements ILoanService{
             if(loan.getUser().getUserId().equals(id)){
                 sum = sum.add(loan.getArrears());
             }
-            else {
-                throw new UserNotFoundException("User is not found.");
-            }
         }
         return sum;
     }
@@ -120,9 +110,6 @@ public class LoanService implements ILoanService{
                 if(LoanUtils.isInvalidDueDate(loan.getDueDate())){
                     sum = sum.add(loan.getArrears());
                 }
-            }
-            else{
-                throw new UserNotFoundException("User is not found.");
             }
         }
         return sum;
@@ -139,21 +126,19 @@ public class LoanService implements ILoanService{
                     sum = sum.add(LoanUtils.calculateLateFeeAmount(loan.getDueDate()));
                 }
             }
-            else{
-                throw new UserNotFoundException("User is not found.");
-            }
         }
         return sum;
     }
 
     public BigDecimal calculateLoanById(Long id) {
         Loan loan = loanRepository.findLoanByLoanId(id);
+        if(loan == null) throw new LoanNotFoundException("Loan not found");
         return LoanUtils.calculateLoan(loan);
     }
 
     public LoanDTO findLoanById(Long id){
         Loan loan = loanRepository.findLoanByLoanId(id);
-        if(loan.equals(null)) throw new LoanNotFoundException("Loan not found");
+        if(loan == null) throw new LoanNotFoundException("Loan not found");
         LoanDTO loanDTO = LoanMapper.INSTANCE.convertLoanToLoanDTO(loan);
         return loanDTO;
 

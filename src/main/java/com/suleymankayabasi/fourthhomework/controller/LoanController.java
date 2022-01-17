@@ -20,7 +20,12 @@ public class LoanController {
     @Autowired
     private LoanService loanService;
 
-    @GetMapping("/loan-amount/{id}")
+    @PostMapping
+    public ResponseEntity<LoanDTO> saveLoan(@RequestBody @Valid LoanDTO loanDTO){
+        return ResponseEntity.status(HttpStatus.CREATED).body(loanService.save(loanDTO));
+    }
+
+    @GetMapping("/total-loan-amount/{id}")
     public ResponseEntity<BigDecimal> calculateLoan(@PathVariable Long id){
         return ResponseEntity.status(HttpStatus.OK).body(loanService.calculateLoanById(id));
     }
@@ -30,12 +35,7 @@ public class LoanController {
         return ResponseEntity.status(HttpStatus.OK).body(loanService.findLoanById(id));
     }
 
-    @PostMapping
-    public ResponseEntity<LoanDTO> saveLoan(@RequestBody @Valid LoanDTO loanDTO){
-        return ResponseEntity.status(HttpStatus.CREATED).body(loanService.save(loanDTO));
-    }
-
-    @GetMapping("/loansByDate")
+    @GetMapping("/loan-by-date")
     public List<LoanDTO> findAll( @RequestParam(name= "dateBefore", defaultValue="")String dateBeforeString,
                                    @RequestParam(name= "dateAfter", defaultValue="")String dateAfterString){
         String pattern ="yyyy-MM-dd";
@@ -44,27 +44,27 @@ public class LoanController {
         return loanService.listLoans(dateBefore,dateAfter);
     }
 
-    @GetMapping("/list-loans-user/{id}")
+    @GetMapping("/loan-list/user/{id}")
     public List<LoanDTO> listAllLoansByUserId(@PathVariable Long id){
         return loanService.listAllLoansByUserId(id);
     }
 
-    @GetMapping("/due-date-loans-list-user/{id}")
+    @GetMapping("/due-date-loan-list/user/{id}")
     public List<LoanDTO> listAllDueDateLoansByUserId(@PathVariable Long id){
         return loanService.listAllDueDateLoansByUserId(id);
     }
 
-    @GetMapping("/arrears-total/{id}")
+    @GetMapping("/total-arrears/user/{id}")
     public ResponseEntity<BigDecimal> returnTotalDebtAmount(@PathVariable Long id){
         return ResponseEntity.status(HttpStatus.OK).body(loanService.returnTotalDebtAmount(id));
     }
 
-    @GetMapping("/due-date-loans-total/{i4d}")
+    @GetMapping("/total-due-date-loan/user/{id}")
     public ResponseEntity<BigDecimal> returnDueDateDebtAmount(@PathVariable Long id) {
         return ResponseEntity.status(HttpStatus.OK).body(loanService.returnDueDateDebtAmount(id));
     }
 
-    @GetMapping("/late-fee-total/{id}")
+    @GetMapping("/total-late-fee-amount/user/{id}")
     public ResponseEntity<BigDecimal> returnSnapLateFeeAmount(@PathVariable Long id){
         return ResponseEntity.status(HttpStatus.OK).body(loanService.returnSnapLateFeeAmount(id));
     }

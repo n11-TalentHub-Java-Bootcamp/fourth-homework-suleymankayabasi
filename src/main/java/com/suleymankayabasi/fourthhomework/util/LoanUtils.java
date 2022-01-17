@@ -58,16 +58,16 @@ public class LoanUtils {
         LocalDate localDateNow = LocalDate.now();
 
         if (isDateBeforeTwoThousandEighteen(dueDate)) {
-            int beforeday = calculateDayAmountBeforeTwoThousandEighteen(dueDate);
-            double before = LateFeeAmountEnum.BEFORE_2018.getVal() * beforeday;
-            int  afterday = calculateDayAmountAfterTwoThousandEighteen(localDateNow);
-            double after = LateFeeAmountEnum.AFTER_2018.getVal() * afterday;
+            int beforeDay = calculateDayAmountBeforeTwoThousandEighteen(dueDate);
+            double before = LateFeeAmountEnum.BEFORE_2018.getVal() * beforeDay;
+            int  afterDay = calculateDayAmountAfterTwoThousandEighteen(localDateNow);
+            double after = LateFeeAmountEnum.AFTER_2018.getVal() * afterDay;
             BigDecimal result = BigDecimal.valueOf(before + after);
             return result;
 
         } else{
-            int  afterday = calculateDayAmountAfterTwoThousandEighteenDueDate(dueDate);
-            double after = LateFeeAmountEnum.AFTER_2018.getVal() * afterday;
+            int afterDay = calculateDayAmountAfterTwoThousandEighteenDueDate(dueDate);
+            double after = LateFeeAmountEnum.AFTER_2018.getVal() * afterDay;
             BigDecimal result = BigDecimal.valueOf( after);
             return result;
 

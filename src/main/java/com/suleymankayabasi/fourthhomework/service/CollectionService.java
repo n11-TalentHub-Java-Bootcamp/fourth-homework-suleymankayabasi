@@ -5,7 +5,6 @@ import com.suleymankayabasi.fourthhomework.dto.LoanDTO;
 import com.suleymankayabasi.fourthhomework.enums.LoanTypeEnum;
 import com.suleymankayabasi.fourthhomework.exception.CollectionNotFoundException;
 import com.suleymankayabasi.fourthhomework.exception.LoanNotFoundException;
-import com.suleymankayabasi.fourthhomework.exception.UserNotFoundException;
 import com.suleymankayabasi.fourthhomework.mapper.CollectionMapper;
 import com.suleymankayabasi.fourthhomework.mapper.LoanMapper;
 import com.suleymankayabasi.fourthhomework.model.Collection;
@@ -43,13 +42,15 @@ public class CollectionService implements ICollectionService{
             throw new CollectionNotFoundException("Collection amount is not enough!");
         }
 
-        Collection collection = new Collection();
-        collection.setPrincipalDebtAmount(loanDTO.getPrincipalDebt());
-        collection.setLoanAmount(loanService.calculateLoanById(id));
-        collection.setRegistrationDate(LocalDate.now());
-        collection.setCollectionLoanType(LoanTypeEnum.STR_TOTAL.toString());
-        collection.setLoanId(id);
-        collection.setLoanUserId(loanDTO.getUserId());
+        Collection collection = new Collection().builder()
+                .principalDebtAmount(loanDTO.getPrincipalDebt())
+                        .loanAmount(LoanUtils.calculateLateFeeAmount(loan.getDueDate()))
+                                .registrationDate(LocalDate.now())
+                                        .collectionLoanType(LoanTypeEnum.STR_NORMAL.toString())
+                                                .loanId(loan.getLoanId())
+                                                        .loanUserId(id)
+                .build();
+
         collectionRepository.save(collection);
 
         Collection collection0 = collectionRepository.findCollectionByLoanId(id);
@@ -57,36 +58,23 @@ public class CollectionService implements ICollectionService{
 
         if(LoanUtils.isInvalidDueDate(loan.getDueDate())){
 
-            collectionDTO.setLoanAmount(LoanUtils.calculateLateFeeAmount(loanDTO.getDueDate()));
-
             while(!(collectionDTO.getLoanAmount().equals(BigDecimal.valueOf(0)))){
 
-                collectionDTO.setPrincipalDebtAmount(loan.getPrincipalDebt());
+                if(!(collectionDTO.getLoanAmount().equals( BigDecimal.valueOf(0)))){
 
-                if(!(collectionDTO.getPrincipalDebtAmount().equals(BigDecimal.valueOf(0)))){
-
-                    collectionDTO.setCollectionLoanType(LoanTypeEnum.STR_NORMAL.toString());
-                    collectionDTO.setLoanId(loan.getLoanId());
                     collectionDTO.setRegistrationDate(LocalDate.now());
-                    collectionDTO.setLoanUserId(loan.getUser().getUserId());
-                    Collection collection1 = CollectionMapper.INSTANCE.convertCollectionDTOtoCollection(collectionDTO);
-                    collectionRepository.save(collection1);
-                }
-                collectionDTO.setPrincipalDebtAmount(collectionDTO.getLoanAmount());
-
-                if(!(collectionDTO.getPrincipalDebtAmount().equals(BigDecimal.valueOf(0)))){
-
-                    collectionDTO.setLoanAmount(BigDecimal.valueOf(0));
                     collectionDTO.setCollectionLoanType(LoanTypeEnum.STR_LATE_FEE.toString());
                     collectionDTO.setLoanId(loan.getLoanId());
-                    collectionDTO.setRegistrationDate(LocalDate.now());
-                    collectionDTO.setLoanUserId(loan.getUser().getUserId());
+                    collectionDTO.setLoanUserId(id);
+                    collectionDTO.setPrincipalDebtAmount(collectionDTO.getLoanAmount());
+                    collectionDTO.setLoanAmount(BigDecimal.valueOf(0));
+
                     Collection collection1 = CollectionMapper.INSTANCE.convertCollectionDTOtoCollection(collectionDTO);
                     collectionRepository.save(collection1);
                 }
             }
-
         }
+
         loanService.updateLoanAmount(id);
         return collectionDTO;
     }
@@ -116,9 +104,6 @@ public class CollectionService implements ICollectionService{
             if(collection.getLoanUserId().equals(id)){
                 newCollectionList.add(collection);
             }
-            else {
-                throw new UserNotFoundException("User is not found");
-            }
         }
         List<CollectionDTO> collectionDTOList = CollectionMapper.INSTANCE.convertCollectionListToCollectionDTOList(newCollectionList);
         if(collectionDTOList.isEmpty()) throw new CollectionNotFoundException("Collection List is empty");
@@ -135,9 +120,6 @@ public class CollectionService implements ICollectionService{
                 if(collection.getCollectionLoanType().equals(LoanTypeEnum.STR_LATE_FEE.toString())){
                     newCollectionList.add(collection);
                 }
-            }
-            else {
-                throw new UserNotFoundException("User is not found");
             }
         }
         List<CollectionDTO> collectionDTOList = CollectionMapper.INSTANCE.convertCollectionListToCollectionDTOList(newCollectionList);
